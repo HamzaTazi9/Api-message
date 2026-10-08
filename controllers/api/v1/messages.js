@@ -10,6 +10,14 @@ const handleError = (res, error) => {
   res.status(500).json({ status: "error", message: error.message });
 };
 
+// Accept both { text, user } and { message: { text, user } }
+const getBody = (req) => {
+  const body = req.body || {};
+  return typeof body.message === "object" && body.message !== null
+    ? body.message
+    : body;
+};
+
 export const list = async (req, res) => {
   try {
     // Make a variable messages, load all messages from the database using the Message model
@@ -43,10 +51,8 @@ export const get = async (req, res) => {
 
 export const create = async (req, res) => {
   try {
-    const message = new Message({
-      text: req.body.text,
-      user: req.body.user,
-    });
+    const { text, user } = getBody(req);
+    const message = new Message({ text, user });
 
     await message.save();
 
@@ -64,9 +70,10 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
   try {
     // Only update the fields that were sent
+    const { text, user } = getBody(req);
     const changes = {};
-    if (req.body.text !== undefined) changes.text = req.body.text;
-    if (req.body.user !== undefined) changes.user = req.body.user;
+    if (text !== undefined) changes.text = text;
+    if (user !== undefined) changes.user = user;
 
     const message = await Message.findByIdAndUpdate(req.params.id, changes, {
       returnDocument: "after",
