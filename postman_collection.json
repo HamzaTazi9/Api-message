@@ -1,0 +1,73 @@
+{
+  "info": {
+    "name": "Chat Messages API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://api-message-1a3v.onrender.com/api/v1" },
+    { "key": "messageId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Get all messages",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/messages"
+      }
+    },
+    {
+      "name": "Create message",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.message) {",
+              "  pm.collectionVariables.set(\"messageId\", json.data.message._id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user\": \"Hamza\",\n  \"text\": \"Nieuw bericht\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/messages"
+      }
+    },
+    {
+      "name": "Get message by id",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/messages/{{messageId}}"
+      }
+    },
+    {
+      "name": "Update message",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Aangepast bericht\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{baseUrl}}/messages/{{messageId}}"
+      }
+    },
+    {
+      "name": "Delete message",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/messages/{{messageId}}"
+      }
+    }
+  ]
+}
