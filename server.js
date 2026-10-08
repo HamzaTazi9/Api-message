@@ -24,6 +24,17 @@ connectToDatabase();
 
 app.use(express.json());
 
+// Log every request so you can see in the Render logs what is being sent
+app.use((req, res, next) => {
+  res.on("finish", () => {
+    console.log(
+      `${req.method} ${req.originalUrl} ${res.statusCode}`,
+      JSON.stringify(req.body ?? {})
+    );
+  });
+  next();
+});
+
 app.use("/api/v1/messages", messagesRouter);
 
 app.listen(PORT, () => {
